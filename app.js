@@ -47,8 +47,65 @@
     session: [], counter: 0, currentN: null,
     started: false, startAt: 0, frozenMs: 0,
     timerInt: null, flipInt: null, flipFrame: 0, rolling: false,
-    restInt: null, restEnd: 0,
+    restInt: null, restEnd: 0, restSoundNodes: [],
   };
+
+  let audioCtx = null;
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function cancelRestSound() {
+    state.restSoundNodes.forEach((node) => {
+      try { node.stop(); node.disconnect(); } catch (_) { /* already stopped */ }
+    });
+    state.restSoundNodes = [];
+  }
+
+  function scheduleRestCompleteSound() {
+    cancelRestSound();
+    try {
+      const ctx = ensureAudio();
+      const when = ctx.currentTime + REST_SEC;
+      const master = ctx.createGain();
+      master.gain.value = 0.92;
+      master.connect(ctx.destination);
+      state.restSoundNodes.push(master);
+
+      // Sharp gym-timer beeps — square waves cut through background music
+      const beeps = [
+        { at: 0, freq: 988 },
+        { at: 0.14, freq: 988 },
+        { at: 0.28, freq: 1319 },
+        { at: 0.42, freq: 1319 },
+        { at: 0.56, freq: 1568 },
+        { at: 0.70, freq: 1568 },
+      ];
+      const BEEP = 0.1;
+      const ATTACK = 0.003;
+
+      beeps.forEach(({ at, freq }) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, when + at);
+        gain.gain.linearRampToValueAtTime(0.55, when + at + ATTACK);
+        gain.gain.setValueAtTime(0.55, when + at + BEEP - 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + at + BEEP);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(when + at);
+        osc.stop(when + at + BEEP + 0.02);
+        state.restSoundNodes.push(osc, gain);
+      });
+    } catch (_) { /* audio unavailable */ }
+  }
 
   const imgURL = (p) => IMG_BASE + p;
   const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "—");
@@ -110,9 +167,10 @@
     const m = Math.floor(s / 60);
     return `${m}:${String(s % 60).padStart(2, "0")}`;
   }
-  function stopRestTimer() {
+  function stopRestTimer(cancelSound = true) {
     clearInterval(state.restInt);
     state.restInt = null;
+    if (cancelSound) cancelRestSound();
     el.restClock.dataset.active = "false";
     el.restClock.setAttribute("aria-hidden", "true");
     el.restClock.style.removeProperty("--rest-pct");
@@ -123,7 +181,7 @@
     el.restTimer.textContent = fmtRest(left);
     el.restClock.style.setProperty("--rest-pct", String(pct));
     if (left <= 0) {
-      stopRestTimer();
+      stopRestTimer(false);
       announce("Rest complete — back to the iron.");
     }
   }
@@ -131,6 +189,7 @@
     clearInterval(state.restInt);
     state.restInt = null;
     state.restEnd = Date.now() + REST_SEC * 1000;
+    scheduleRestCompleteSound();
     el.restClock.dataset.active = "true";
     el.restClock.setAttribute("aria-hidden", "false");
     tickRest();
@@ -143,6 +202,7 @@
 
   function logSet() {
     if (!state.currentN) return;
+    ensureAudio();
     const entry = state.session.find((e) => e.n === state.currentN);
     if (!entry) return;
 
@@ -284,6 +344,7 @@
 
   function roll() {
     if (!state.ready || state.rolling) return;
+    ensureAudio();
     state.rolling = true;
     setTimeout(() => { state.rolling = false; }, reduceMotion ? 60 : 480);
 
