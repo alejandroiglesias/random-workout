@@ -1,0 +1,10 @@
+{
+  "name": "cast-iron",
+  "private": true,
+  "scripts": {
+    "start": "serve -l 4178"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

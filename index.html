@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CAST IRON — Workouts by the roll of the die</title>
+<meta name="description" content="A physical-culture almanac. Cast the die, take what the gods of iron give you. Random workouts from the free-exercise-db." />
+<meta name="theme-color" content="#efe7d6" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%239b2d20'/%3E%3Cg fill='%23efe7d6'%3E%3Ccircle cx='30' cy='30' r='9'/%3E%3Ccircle cx='70' cy='30' r='9'/%3E%3Ccircle cx='50' cy='50' r='9'/%3E%3Ccircle cx='30' cy='70' r='9'/%3E%3Ccircle cx='70' cy='70' r='9'/%3E%3C/g%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,500&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- ───────────────────────────── MASTHEAD ───────────────────────────── -->
+  <header class="masthead reveal" style="--d:0">
+    <div class="masthead__brand">
+      <h1 class="wordmark">Cast&nbsp;Iron</h1>
+      <p class="tagline">Strength left to chance — workouts dealt by the roll of the die</p>
+    </div>
+    <div class="masthead__controls">
+      <div class="masthead__timers">
+        <div class="clock clock--rest" id="rest-clock" data-active="false" aria-hidden="true" aria-live="polite">
+          <span class="clock__bar" id="rest-bar" aria-hidden="true"></span>
+          <span class="clock__label">Rest</span>
+          <span class="clock__time" id="rest-timer">1:30</span>
+          <span class="clock__dot clock__dot--rest" aria-hidden="true"></span>
+        </div>
+        <div class="clock" id="clock" data-running="false">
+          <span class="clock__label">Session</span>
+          <span class="clock__time" id="timer">00:00</span>
+          <span class="clock__dot" aria-hidden="true"></span>
+        </div>
+      </div>
+      <button class="btn-finish" id="finish-btn" disabled>
+        <span>Finish</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="edition reveal" style="--d:1">
+    <span class="rule" aria-hidden="true"></span>
+    <span class="edition__item">No.&nbsp;001</span>
+    <span class="edition__dot" aria-hidden="true">✦</span>
+    <span class="edition__item" id="edition-date">—</span>
+    <span class="edition__dot" aria-hidden="true">✦</span>
+    <span class="edition__item">The Randomizer&rsquo;s Almanac</span>
+    <span class="edition__dot" aria-hidden="true">✦</span>
+    <span class="edition__item" id="db-count">consulting the catalogue…</span>
+    <span class="rule" aria-hidden="true"></span>
+  </div>
+
+  <!-- ───────────────────────────── LAYOUT ───────────────────────────── -->
+  <main class="layout">
+
+    <!-- LEFT — the spotlight / current plate -->
+    <section class="spotlight reveal" id="spotlight" style="--d:2" aria-live="polite">
+
+      <!-- loading -->
+      <div class="spot-state spot-loading" id="spot-loading">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Consulting the catalogue of iron…</p>
+      </div>
+
+      <!-- empty -->
+      <div class="spot-state spot-empty" id="spot-empty" hidden>
+        <div class="spot-empty__mark" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="16"/><g class="dots"><circle cx="30" cy="30" r="7"/><circle cx="70" cy="30" r="7"/><circle cx="50" cy="50" r="7"/><circle cx="30" cy="70" r="7"/><circle cx="70" cy="70" r="7"/></g></svg>
+        </div>
+        <h2 class="spot-empty__title">Cast the die to begin</h2>
+        <p class="spot-empty__sub">Take what the gods of iron give you. The first throw starts the clock.</p>
+      </div>
+
+      <!-- current -->
+      <article class="spot-current" id="spot-current" hidden>
+        <div class="plate-wrap">
+          <figure class="plate" id="plate">
+            <span class="cmark cmark--tl" aria-hidden="true"></span>
+            <span class="cmark cmark--tr" aria-hidden="true"></span>
+            <span class="cmark cmark--bl" aria-hidden="true"></span>
+            <span class="cmark cmark--br" aria-hidden="true"></span>
+            <div class="plate__mat">
+              <img id="plate-img" alt="" decoding="async" />
+            </div>
+            <span class="plate__badge" id="plate-badge">▶ Moving</span>
+            <figcaption class="plate__cap">
+              <span class="plate__fig" id="plate-fig">fig.&nbsp;a</span>
+              <span class="plate__sep" aria-hidden="true">/</span>
+              <span class="plate__plate-name" id="plate-name">—</span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="detail">
+          <p class="detail__eyebrow">Now on the platform</p>
+          <h2 class="detail__name" id="ex-name">—</h2>
+
+          <div class="sets-deck" id="sets-deck">
+            <div class="sets-deck__tally" aria-live="polite">
+              <span class="sets-deck__label">Sets on this lift</span>
+              <span class="sets-deck__count" id="set-count">0</span>
+            </div>
+            <button class="btn-set" id="log-set-btn" type="button" aria-label="Mark a set and start ninety second rest">
+              <span class="btn-set__glyph" aria-hidden="true">+</span>
+              <span class="btn-set__text">Mark a set</span>
+            </button>
+          </div>
+
+          <dl class="specs" id="specs"></dl>
+
+          <div class="muscles" id="muscles"></div>
+
+          <div class="movement">
+            <h3 class="movement__head"><span>The Movement</span></h3>
+            <ol class="movement__steps" id="steps"></ol>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- RIGHT — the caster + the card -->
+    <aside class="rail">
+
+      <button class="caster reveal" id="caster" style="--d:3" aria-label="Cast the die for a random exercise">
+        <span class="caster__deco" aria-hidden="true">Cast</span>
+        <span class="die" data-face="5" aria-hidden="true"></span>
+        <span class="caster__cta">Cast the die</span>
+        <span class="caster__sub" id="caster-sub">Deal your first movement</span>
+      </button>
+
+      <section class="card reveal" id="card" style="--d:4" aria-label="Session card">
+        <div class="card__head">
+          <h2 class="card__title">The Card</h2>
+          <span class="card__count" id="card-count">0 lifts</span>
+        </div>
+        <p class="card__empty" id="card-empty">Nothing dealt yet. Cast the die to fill your card.</p>
+        <ol class="log" id="log"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ───────────────────────── MOBILE ROLL BAR ───────────────────────── -->
+  <div class="rollbar" aria-hidden="false">
+    <button class="rollbar__btn" id="rollbar-btn" aria-label="Cast the die for a random exercise">
+      <span class="die die--mini" data-face="5" aria-hidden="true"></span>
+      <span class="rollbar__label">Cast the die</span>
+    </button>
+  </div>
+
+  <!-- ───────────────────────── FINISH OVERLAY ───────────────────────── -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="receipt" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+      <div class="receipt__perf receipt__perf--top" aria-hidden="true"></div>
+      <div class="receipt__body">
+        <p class="receipt__brand">Cast Iron — Physical Culture</p>
+        <div class="receipt__stamp" aria-hidden="true">Session<br>Closed</div>
+        <h2 class="receipt__title" id="receipt-title">The Tally</h2>
+        <dl class="tally">
+          <div class="tally__row"><dt>Time under the iron</dt><dd id="tally-time">00:00</dd></div>
+          <div class="tally__row"><dt>Movements dealt</dt><dd id="tally-count">0</dd></div>
+          <div class="tally__row"><dt>Muscle groups struck</dt><dd id="tally-muscles">0</dd></div>
+          <div class="tally__row"><dt>Sets accounted for</dt><dd id="tally-sets">0</dd></div>
+        </dl>
+        <div class="tally__chips" id="tally-chips"></div>
+        <p class="receipt__verdict" id="receipt-verdict">—</p>
+        <button class="btn-new" id="new-session-btn">Begin a new session</button>
+        <p class="receipt__foot">Catalogue: free-exercise-db · 873 movements on file</p>
+      </div>
+      <div class="receipt__perf receipt__perf--bottom" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <div class="sronly" id="live" aria-live="assertive"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
