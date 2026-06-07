@@ -207,15 +207,8 @@
   }
 
   function detectNavigatorLang() {
-    const candidates = navigator.languages?.length
-      ? [...navigator.languages]
-      : [navigator.language || navigator.userLanguage || "en"];
-    for (const candidate of candidates) {
-      const code = String(candidate).toLowerCase().split("-")[0];
-      if (code === "es") return "es";
-      if (code === "en") return "en";
-    }
-    return "en";
+    const nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+    return nav.startsWith("es") ? "es" : "en";
   }
 
   function detectLang() {
