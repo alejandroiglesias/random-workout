@@ -20,24 +20,28 @@
   <header class="masthead reveal" style="--d:0">
     <div class="masthead__brand">
       <h1 class="wordmark">Cast&nbsp;Iron</h1>
-      <p class="tagline">Strength left to chance — workouts dealt by the roll of the die</p>
+      <p class="tagline" data-i18n="tagline"></p>
     </div>
     <div class="masthead__controls">
+      <div class="lang-switch" role="group" id="lang-switch" data-i18n-attr="aria-label:langSwitchAria">
+        <button type="button" class="lang-switch__btn" data-lang="en" aria-pressed="false">EN</button>
+        <button type="button" class="lang-switch__btn" data-lang="es" aria-pressed="false">ES</button>
+      </div>
       <div class="masthead__timers">
         <div class="clock clock--rest" id="rest-clock" data-active="false" aria-hidden="true" aria-live="polite">
           <span class="clock__bar" id="rest-bar" aria-hidden="true"></span>
-          <span class="clock__label">Rest</span>
+          <span class="clock__label" data-i18n="labelRest"></span>
           <span class="clock__time" id="rest-timer">1:30</span>
           <span class="clock__dot clock__dot--rest" aria-hidden="true"></span>
         </div>
         <div class="clock" id="clock" data-running="false">
-          <span class="clock__label">Session</span>
+          <span class="clock__label" data-i18n="labelSession"></span>
           <span class="clock__time" id="timer">00:00</span>
           <span class="clock__dot" aria-hidden="true"></span>
         </div>
       </div>
       <button class="btn-finish" id="finish-btn" disabled>
-        <span>Finish</span>
+        <span data-i18n="btnFinish"></span>
       </button>
     </div>
   </header>
@@ -48,9 +52,9 @@
     <span class="edition__dot" aria-hidden="true">✦</span>
     <span class="edition__item" id="edition-date">—</span>
     <span class="edition__dot" aria-hidden="true">✦</span>
-    <span class="edition__item">The Randomizer&rsquo;s Almanac</span>
+    <span class="edition__item" data-i18n="editionAlmanac"></span>
     <span class="edition__dot" aria-hidden="true">✦</span>
-    <span class="edition__item" id="db-count">consulting the catalogue…</span>
+    <span class="edition__item" id="db-count" data-i18n="dbCountLoading"></span>
     <span class="rule" aria-hidden="true"></span>
   </div>
 
@@ -63,7 +67,7 @@
       <!-- loading -->
       <div class="spot-state spot-loading" id="spot-loading">
         <div class="spinner" aria-hidden="true"></div>
-        <p>Consulting the catalogue of iron…</p>
+        <p data-i18n="spotLoading"></p>
       </div>
 
       <!-- empty -->
@@ -71,8 +75,8 @@
         <div class="spot-empty__mark" aria-hidden="true">
           <svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="16"/><g class="dots"><circle cx="30" cy="30" r="7"/><circle cx="70" cy="30" r="7"/><circle cx="50" cy="50" r="7"/><circle cx="30" cy="70" r="7"/><circle cx="70" cy="70" r="7"/></g></svg>
         </div>
-        <h2 class="spot-empty__title">Cast the die to begin</h2>
-        <p class="spot-empty__sub">Take what the gods of iron give you. The first throw starts the clock.</p>
+        <h2 class="spot-empty__title" data-i18n="spotEmptyTitle"></h2>
+        <p class="spot-empty__sub" data-i18n="spotEmptySub"></p>
       </div>
 
       <!-- current -->
@@ -86,7 +90,7 @@
             <div class="plate__mat">
               <img id="plate-img" alt="" decoding="async" />
             </div>
-            <span class="plate__badge" id="plate-badge">▶ Moving</span>
+            <span class="plate__badge" id="plate-badge"></span>
             <figcaption class="plate__cap">
               <span class="plate__fig" id="plate-fig">fig.&nbsp;a</span>
               <span class="plate__sep" aria-hidden="true">/</span>
@@ -96,17 +100,17 @@
         </div>
 
         <div class="detail">
-          <p class="detail__eyebrow">Now on the platform</p>
+          <p class="detail__eyebrow" data-i18n="detailEyebrow"></p>
           <h2 class="detail__name" id="ex-name">—</h2>
 
           <div class="sets-deck" id="sets-deck">
             <div class="sets-deck__tally" aria-live="polite">
-              <span class="sets-deck__label">Sets on this lift</span>
+              <span class="sets-deck__label" data-i18n="setsLabel"></span>
               <span class="sets-deck__count" id="set-count">0</span>
             </div>
-            <button class="btn-set" id="log-set-btn" type="button" aria-label="Mark a set and start ninety second rest">
+            <button class="btn-set" id="log-set-btn" type="button" data-i18n-attr="aria-label:btnMarkSetAria">
               <span class="btn-set__glyph" aria-hidden="true">+</span>
-              <span class="btn-set__text">Mark a set</span>
+              <span class="btn-set__text" data-i18n="btnMarkSet"></span>
             </button>
           </div>
 
@@ -115,7 +119,7 @@
           <div class="muscles" id="muscles"></div>
 
           <div class="movement">
-            <h3 class="movement__head"><span>The Movement</span></h3>
+            <h3 class="movement__head"><span data-i18n="movementHead"></span></h3>
             <ol class="movement__steps" id="steps"></ol>
           </div>
         </div>
@@ -125,19 +129,19 @@
     <!-- RIGHT — the caster + the card -->
     <aside class="rail">
 
-      <button class="caster reveal" id="caster" style="--d:3" aria-label="Cast the die for a random exercise">
-        <span class="caster__deco" aria-hidden="true">Cast</span>
+      <button class="caster reveal" id="caster" style="--d:3" data-i18n-attr="aria-label:casterAria">
+        <span class="caster__deco" aria-hidden="true" data-i18n="casterDeco"></span>
         <span class="die" data-face="5" aria-hidden="true"></span>
-        <span class="caster__cta">Cast the die</span>
-        <span class="caster__sub" id="caster-sub">Deal your first movement</span>
+        <span class="caster__cta" data-i18n="casterCta"></span>
+        <span class="caster__sub" id="caster-sub"></span>
       </button>
 
-      <section class="card reveal" id="card" style="--d:4" aria-label="Session card">
+      <section class="card reveal" id="card" style="--d:4" data-i18n-attr="aria-label:cardAria">
         <div class="card__head">
-          <h2 class="card__title">The Card</h2>
-          <span class="card__count" id="card-count">0 lifts</span>
+          <h2 class="card__title" data-i18n="cardTitle"></h2>
+          <span class="card__count" id="card-count"></span>
         </div>
-        <p class="card__empty" id="card-empty">Nothing dealt yet. Cast the die to fill your card.</p>
+        <p class="card__empty" id="card-empty" data-i18n="cardEmpty"></p>
         <ol class="log" id="log"></ol>
       </section>
     </aside>
@@ -145,9 +149,9 @@
 
   <!-- ───────────────────────── MOBILE ROLL BAR ───────────────────────── -->
   <div class="rollbar" aria-hidden="false">
-    <button class="rollbar__btn" id="rollbar-btn" aria-label="Cast the die for a random exercise">
+    <button class="rollbar__btn" id="rollbar-btn" data-i18n-attr="aria-label:rollbarAria">
       <span class="die die--mini" data-face="5" aria-hidden="true"></span>
-      <span class="rollbar__label">Cast the die</span>
+      <span class="rollbar__label" data-i18n="rollbarLabel"></span>
     </button>
   </div>
 
@@ -156,19 +160,19 @@
     <div class="receipt" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
       <div class="receipt__perf receipt__perf--top" aria-hidden="true"></div>
       <div class="receipt__body">
-        <p class="receipt__brand">Cast Iron — Physical Culture</p>
-        <div class="receipt__stamp" aria-hidden="true">Session<br>Closed</div>
-        <h2 class="receipt__title" id="receipt-title">The Tally</h2>
+        <p class="receipt__brand" data-i18n="receiptBrand"></p>
+        <div class="receipt__stamp" aria-hidden="true" data-i18n="receiptStamp" data-i18n-html></div>
+        <h2 class="receipt__title" id="receipt-title" data-i18n="receiptTitle"></h2>
         <dl class="tally">
-          <div class="tally__row"><dt>Time under the iron</dt><dd id="tally-time">00:00</dd></div>
-          <div class="tally__row"><dt>Movements dealt</dt><dd id="tally-count">0</dd></div>
-          <div class="tally__row"><dt>Muscle groups struck</dt><dd id="tally-muscles">0</dd></div>
-          <div class="tally__row"><dt>Sets accounted for</dt><dd id="tally-sets">0</dd></div>
+          <div class="tally__row"><dt data-i18n="tallyTime"></dt><dd id="tally-time">00:00</dd></div>
+          <div class="tally__row"><dt data-i18n="tallyMovements"></dt><dd id="tally-count">0</dd></div>
+          <div class="tally__row"><dt data-i18n="tallyMuscles"></dt><dd id="tally-muscles">0</dd></div>
+          <div class="tally__row"><dt data-i18n="tallySets"></dt><dd id="tally-sets">0</dd></div>
         </dl>
         <div class="tally__chips" id="tally-chips"></div>
         <p class="receipt__verdict" id="receipt-verdict">—</p>
-        <button class="btn-new" id="new-session-btn">Begin a new session</button>
-        <p class="receipt__foot">Catalogue: free-exercise-db · 873 movements on file</p>
+        <button class="btn-new" id="new-session-btn" data-i18n="btnNewSession"></button>
+        <p class="receipt__foot" id="receipt-foot" data-i18n="receiptFootLoading"></p>
       </div>
       <div class="receipt__perf receipt__perf--bottom" aria-hidden="true"></div>
     </div>
@@ -176,6 +180,7 @@
 
   <div class="sronly" id="live" aria-live="assertive"></div>
 
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -101,6 +101,25 @@ body{
 }
 
 .masthead__controls{ display:flex; align-items:stretch; gap:12px; }
+.lang-switch{
+  display:flex; align-self:center;
+  border:2px solid var(--ink);
+  background:var(--paper-2);
+  box-shadow:var(--shadow);
+}
+.lang-switch__btn{
+  font-family:var(--mono); font-weight:700;
+  font-size:.68rem; letter-spacing:.12em;
+  min-width:2.6rem; padding:8px 10px;
+  border:none; background:transparent;
+  color:var(--ink-soft); cursor:pointer;
+  transition:background .15s ease, color .15s ease;
+}
+.lang-switch__btn + .lang-switch__btn{ border-left:1px solid var(--line-2); }
+.lang-switch__btn:hover{ color:var(--ink); background:rgba(155,45,32,.06); }
+.lang-switch__btn.is-active{
+  color:var(--paper); background:var(--ox);
+}
 .masthead__timers{
   position:relative;
   display:flex;
