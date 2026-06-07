@@ -198,13 +198,28 @@
 
   let lang = "en";
 
-  function detectLang() {
+  function getStoredLang() {
     try {
       const stored = localStorage.getItem(LANG_KEY);
       if (stored === "en" || stored === "es") return stored;
     } catch (_) { /* private mode */ }
-    const nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
-    return nav.startsWith("es") ? "es" : "en";
+    return null;
+  }
+
+  function detectNavigatorLang() {
+    const candidates = navigator.languages?.length
+      ? [...navigator.languages]
+      : [navigator.language || navigator.userLanguage || "en"];
+    for (const candidate of candidates) {
+      const code = String(candidate).toLowerCase().split("-")[0];
+      if (code === "es") return "es";
+      if (code === "en") return "en";
+    }
+    return "en";
+  }
+
+  function detectLang() {
+    return getStoredLang() || detectNavigatorLang();
   }
 
   function interpolate(template, vars) {
@@ -254,6 +269,8 @@
   window.CastIronI18n = {
     LANG_KEY,
     detectLang,
+    detectNavigatorLang,
+    getStoredLang,
     setLang,
     getLang,
     t,
@@ -288,5 +305,7 @@
     },
   };
 
-  setLang(detectLang(), false);
+  setLang(detectLang(), true);
+  window.CastIronI18n.applyStatic();
+  window.CastIronI18n.updateLangButtons();
 })();
