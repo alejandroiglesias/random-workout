@@ -406,11 +406,16 @@
     announce(t("platformAnnounce", { name: ex.name }));
   }
 
-  function renderLog() {
-    el.cardCount.textContent = cardCountLabel(state.session.length);
-    el.cardEmpty.hidden = state.session.length > 0;
+  function performedExercises() {
+    return state.session.filter((entry) => entry.sets > 0);
+  }
 
-    el.log.innerHTML = state.session.slice().reverse().map((entry) => {
+  function renderLog() {
+    const entries = performedExercises();
+    el.cardCount.textContent = cardCountLabel(entries.length);
+    el.cardEmpty.hidden = entries.length > 0;
+
+    el.log.innerHTML = entries.slice().reverse().map((entry) => {
       const ex = entry.ex;
       const isCur = entry.n === state.currentN;
       const thumb = ex.images && ex.images[0]
@@ -488,6 +493,7 @@
       ? (sets === 1 ? t("verdictSetsOne") : t("verdictSetsMany", { n: sets }))
       : "";
     const vars = { count, mins, sets: setsLine };
+    if (count === 0) return t("verdictZero");
     if (count >= 10) return t("verdict10", vars);
     if (count >= 5) return t("verdict5", vars);
     if (count >= 2) return t("verdict2", vars);
@@ -495,18 +501,19 @@
   }
 
   function renderSummary() {
+    const entries = performedExercises();
     const muscles = new Set();
-    state.session.forEach((e) => {
+    entries.forEach((e) => {
       (e.ex.primaryMuscles || []).forEach((m) => muscles.add(m));
       (e.ex.secondaryMuscles || []).forEach((m) => muscles.add(m));
     });
 
     el.tallyTime.textContent = fmt(state.frozenMs);
-    el.tallyCount.textContent = state.session.length;
+    el.tallyCount.textContent = entries.length;
     el.tallyMuscles.textContent = muscles.size;
     el.tallySets.textContent = totalSets();
     el.tallyChips.innerHTML = [...muscles].map((m) => `<span class="stamp">${trMuscle(m)}</span>`).join("");
-    el.verdict.textContent = verdictFor(state.session.length, state.frozenMs, totalSets());
+    el.verdict.textContent = verdictFor(entries.length, state.frozenMs, totalSets());
   }
 
   function finish() {
@@ -547,7 +554,6 @@
     updateDbStatus();
     renderFilters();
     updateCasterSub();
-    el.cardCount.textContent = cardCountLabel(state.session.length);
 
     if (state.loadError) renderLoadError();
     if (state.currentN) {

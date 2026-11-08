@@ -7,10 +7,11 @@ async function boot(saved, blockedStorage = false) {
   const nodes = new Map();
   function element() {
     return {
-      children: [], dataset: {}, style: {}, hidden: true, textContent: '',
+      children: [], dataset: {}, style: { setProperty() {}, removeProperty() {} }, hidden: true, textContent: '',
       classList: { add() {}, remove() {}, toggle() {} },
       listeners: {}, addEventListener(name, fn) { this.listeners[name] = fn; },
       append(...children) { this.children.push(...children); },
+      setAttribute() {}, focus() {}, querySelector() { return null; },
       replaceChildren() { this.children = []; }, querySelectorAll() { return []; },
     };
   }
@@ -20,22 +21,24 @@ async function boot(saved, blockedStorage = false) {
   };
   let stored = saved;
   const context = vm.createContext({
-    document, Set, console,
+    document, Set, console, Image: class {},
+    setTimeout: fn => { fn(); return 1; }, setInterval: () => 1, clearInterval() {},
     localStorage: {
       getItem() { if (blockedStorage) throw Error('blocked'); return stored; },
       setItem(key, value) { if (blockedStorage) throw Error('blocked'); stored = value; },
     },
     window: {
+      AudioContext: class {},
       matchMedia: () => ({ matches: false }),
       CastIronI18n: {
         t: (key, vars) => key + JSON.stringify(vars || {}), getLang: () => 'en',
-        getLex: () => null, trValue: value => value,
+        getLex: () => null, trMuscle: value => value, trValue: value => value,
         applyStatic() {}, updateLangButtons() {},
       },
     },
     fetch: async () => ({ ok: true, json: async () => [
-      { id: 'squat', name: 'Squat', category: 'strength', images: ['squat.jpg'] },
-      { id: 'stretch', name: 'Stretch', category: 'stretching', images: ['stretch.jpg'] },
+      { id: 'squat', name: 'Squat', category: 'strength', primaryMuscles: ['quadriceps'], images: ['squat.jpg'] },
+      { id: 'stretch', name: 'Stretch', category: 'stretching', primaryMuscles: ['shoulders'], images: ['stretch.jpg'] },
     ] }),
   });
   vm.runInContext(fs.readFileSync('exercise-pool.js', 'utf8'), context);
@@ -76,4 +79,39 @@ test('malformed and unavailable storage do not prevent catalogue and filters loa
     input.checked = false;
     assert.doesNotThrow(() => filters.listeners.change({ target: input }));
   }
+});
+
+
+test('only exercises with recorded sets appear in the log and session summary', async () => {
+  const { nodes } = await boot('["strength"]');
+  const click = id => nodes.get(id).listeners.click();
+  click('caster');
+  assert.equal(nodes.get('log').innerHTML, '');
+  assert.equal(nodes.get('card-empty').hidden, false);
+  click('caster');
+  click('log-set-btn');
+  assert.match(nodes.get('log').innerHTML, /data-n="2"/);
+  assert.doesNotMatch(nodes.get('log').innerHTML, /data-n="1"/);
+  assert.match(nodes.get('card-count').textContent, /cardCountOne/);
+  click('log-set-btn');
+  assert.match(nodes.get('log').innerHTML, /"n":2/);
+  const strength = nodes.get('exercise-types').children[0].children[0];
+  strength.checked = false;
+  nodes.get('exercise-types').listeners.change({ target: strength });
+  click('caster');
+  assert.doesNotMatch(nodes.get('log').innerHTML, /data-n="3"/);
+  click('finish-btn');
+  assert.equal(nodes.get('tally-count').textContent, 1);
+  assert.equal(nodes.get('tally-sets').textContent, 2);
+  assert.equal(nodes.get('tally-muscles').textContent, 1);
+  assert.doesNotMatch(nodes.get('tally-chips').innerHTML, /shoulders/);
+});
+
+test('finishing after only skipped exercises reports no completed exercises', async () => {
+  const { nodes } = await boot(null);
+  nodes.get('caster').listeners.click();
+  nodes.get('finish-btn').listeners.click();
+  assert.equal(nodes.get('tally-count').textContent, 0);
+  assert.equal(nodes.get('tally-muscles').textContent, 0);
+  assert.match(nodes.get('receipt-verdict').textContent, /verdictZero/);
 });
