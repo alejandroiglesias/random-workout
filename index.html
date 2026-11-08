@@ -128,6 +128,11 @@
 
     <!-- RIGHT — the caster + the card -->
     <aside class="rail">
+      <fieldset class="type-filter">
+        <legend data-i18n="filterTitle"></legend>
+        <div id="exercise-types" class="type-filter__options"></div>
+        <p id="filter-status" role="status" aria-live="polite"></p>
+      </fieldset>
 
       <button class="caster reveal" id="caster" style="--d:3" data-i18n-attr="aria-label:casterAria">
         <span class="caster__deco" aria-hidden="true" data-i18n="casterDeco"></span>
@@ -181,6 +186,7 @@
   <div class="sronly" id="live" aria-live="assertive"></div>
 
   <script src="i18n.js"></script>
+  <script src="exercise-pool.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

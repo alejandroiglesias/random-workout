@@ -17,6 +17,7 @@ No build step — vanilla HTML, CSS, and JavaScript served as static files.
 
 - On load, the app fetches the exercise catalogue from [yuhonas/free-exercise-db](https://github.com/yuhonas/free-exercise-db) (`dist/exercises.json` on GitHub).
 - Each roll picks a random exercise with images and instructions.
+- Use **Exercise types** to include or exclude catalogue categories (for example, stretching). All types start checked; your selection is saved locally for future visits. Filters affect future rolls and preserve your session history. With no types selected, rolling is disabled.
 - Log sets to start a 90-second rest timer and build a session card.
 - Finish to see a session summary.
 
@@ -30,5 +31,7 @@ No build step — vanilla HTML, CSS, and JavaScript served as static files.
 | Dismiss summary | Click outside or press `Esc` |
 
 ## Credits
+
+Run `npm test` to check category discovery, filtering, and saved selections.
 
 Exercise data and images from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) by yuhonas.

@@ -6,6 +6,11 @@
 
   const LEX = {
     es: {
+      category: {
+        strength: "fuerza", stretching: "estiramientos", plyometrics: "pliometría",
+        strongman: "strongman", powerlifting: "powerlifting", cardio: "cardio",
+        "olympic weightlifting": "halterofilia", uncategorized: "sin categoría",
+      },
       level: {
         beginner: "principiante",
         intermediate: "intermedio",
@@ -51,6 +56,9 @@
 
   const STRINGS = {
     en: {
+      filterTitle: "Exercise types",
+      filterCount: "{count} of {total} exercises available for the next roll.",
+      filterEmpty: "Select at least one exercise type to roll.",
       pageTitle: "CAST IRON — Workouts by the roll of the die",
       pageDescription:
         "A physical-culture almanac. Cast the die, take what the gods of iron give you. Random workouts from the free-exercise-db.",
@@ -123,6 +131,9 @@
       verdict1: "One throw, one movement.{sets} Every session starts with a single cast.",
     },
     es: {
+      filterTitle: "Tipos de ejercicio",
+      filterCount: "{count} de {total} ejercicios disponibles para el próximo sorteo.",
+      filterEmpty: "Seleccioná al menos un tipo de ejercicio para sortear.",
       pageTitle: "CAST IRON — Entrenamientos a la suerte del dado",
       pageDescription:
         "Un almanaque de cultura f\u00edsica. Tira el dado y acepta lo que los dioses del hierro te den. Entrenamientos aleatorios desde free-exercise-db.",

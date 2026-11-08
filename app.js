@@ -8,6 +8,9 @@
   const { t, setLang, getLang, getLex, trValue, trMuscle, applyStatic, updateLangButtons } =
     window.CastIronI18n;
 
+  const { categories, filterExercises, restoreSelection } = window.CastIronPool;
+  const FILTER_KEY = "cast-iron-categories";
+
   const DATA_URL = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/dist/exercises.json";
   const IMG_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
 
@@ -44,9 +47,11 @@
     tallyChips: $("tally-chips"), verdict: $("receipt-verdict"),
     newBtn: $("new-session-btn"), live: $("live"), receiptFoot: $("receipt-foot"),
     langSwitch: $("lang-switch"),
+    filters: $("exercise-types"), filterStatus: $("filter-status"),
   };
 
   const state = {
+    selectedTypes: new Set(),
     all: [], ready: false, loadError: null,
     session: [], counter: 0, currentN: null,
     started: false, startAt: 0, frozenMs: 0,
@@ -136,6 +141,41 @@
     }
     el.dbCount.textContent = t("dbCountReady", { count: state.all.length });
     el.receiptFoot.textContent = catalogueFootnote(state.all.length);
+  }
+
+  function selectedPool() {
+    return filterExercises(state.all, state.selectedTypes);
+  }
+
+  function updateFilterStatus() {
+    const count = selectedPool().length;
+    el.caster.disabled = el.rollbarBtn.disabled = !state.ready || count === 0;
+    el.filterStatus.textContent = state.ready
+      ? t(count ? "filterCount" : "filterEmpty", { count, total: state.all.length })
+      : t("dbCountLoading");
+  }
+
+  function renderFilters() {
+    el.filters.replaceChildren();
+    categories(state.all).forEach((type) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.value = type;
+      input.checked = state.selectedTypes.has(type);
+      const text = document.createElement("span");
+      text.textContent = trValue(type, getLex("category"));
+      label.append(input, text);
+      el.filters.append(label);
+    });
+    updateFilterStatus();
+  }
+
+  function restoreFilters() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(FILTER_KEY)); } catch (_) { /* use all types */ }
+    state.selectedTypes = restoreSelection(categories(state.all), saved);
+    renderFilters();
   }
 
   function updateEditionDate() {
@@ -410,7 +450,7 @@
 
   /* ---------- the roll ---------- */
   function pickExercise() {
-    const pool = state.all;
+    const pool = selectedPool();
     const curId = state.currentN
       ? (state.session.find((e) => e.n === state.currentN) || {}).ex?.id
       : null;
@@ -422,7 +462,7 @@
   }
 
   function roll() {
-    if (!state.ready || state.rolling) return;
+    if (!state.ready || state.rolling || !selectedPool().length) return;
     ensureAudio();
     state.rolling = true;
     setTimeout(() => { state.rolling = false; }, reduceMotion ? 60 : 480);
@@ -505,6 +545,7 @@
     updateLangButtons();
     updateEditionDate();
     updateDbStatus();
+    renderFilters();
     updateCasterSub();
     el.cardCount.textContent = cardCountLabel(state.session.length);
 
@@ -541,6 +582,7 @@
       if (!state.all.length) throw new Error(t("catalogueEmpty"));
       state.ready = true;
       state.loadError = null;
+      restoreFilters();
       el.spotLoading.hidden = true;
       el.spotEmpty.hidden = false;
     } catch (err) {
@@ -548,9 +590,19 @@
       renderLoadError();
     }
     updateDbStatus();
+    updateFilterStatus();
   }
 
   /* ---------- events ---------- */
+  el.filters.addEventListener("change", (event) => {
+    const input = event.target;
+    if (input.type !== "checkbox") return;
+    if (input.checked) state.selectedTypes.add(input.value);
+    else state.selectedTypes.delete(input.value);
+    try { localStorage.setItem(FILTER_KEY, JSON.stringify([...state.selectedTypes])); } catch (_) { /* filtering still works */ }
+    updateFilterStatus();
+  });
+
   el.caster.addEventListener("click", roll);
   el.rollbarBtn.addEventListener("click", roll);
   el.logSetBtn.addEventListener("click", logSet);

@@ -2,7 +2,8 @@
   "name": "cast-iron",
   "private": true,
   "scripts": {
-    "start": "serve -l 4178"
+    "start": "serve -l 4178",
+    "test": "node --test *.test.js"
   },
   "devDependencies": {
     "serve": "^14.2.4"
